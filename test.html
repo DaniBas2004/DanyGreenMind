@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Inteligencia Emocional</title>
+    <link rel="shortcut icon" href="./Logodannygreen (1).png" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@100..800&display=swap');
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: "Playpen Sans", cursive;
+            font-optical-sizing: auto;
+            background-color: #7FD958;
+        }
+        h1 {
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+        }
+        #question-container, #result-container {
+            background-color: #b1ffdc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #267829;  
+        }
+        #options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            padding: 3px;
+            border-radius: 3px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+        }
+        .progress-bar-fill {
+            display: block;
+            height: 22px;
+            background-color: #659cef;
+            border-radius: 3px;
+            transition: width 500ms ease-in-out;
+        }
+            
+    /* Estilos responsivos para pantallas medianas */
+    @media (min-width: 601px) and (max-width: 1024px) {
+        body {
+            max-width: 90%;
+        }
+
+        button {
+            padding: 8px 16px;
+        }
+
+        #options {
+            justify-content: space-around;
+        }
+    }
+
+    /* Estilos para pantallas grandes */
+    @media (min-width: 1025px) {
+        body {
+            max-width: 1000px;
+        }
+
+        h1, h2 {
+            font-size: 28px;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 12px 24px;
+        }
+
+        #options {
+            justify-content: space-evenly;
+        }
+        }
+    </style>
+</head>
+<body>
+    <h1>Conócete a ti mis@ con este Test Emocional</h1>
+    <h2>0 es no identificado,2 es intermedio y 4 es muy indentificado</h2>
+    <div id="question-container">
+        <p id="question-text"></p>
+        <div id="options"></div>
+    </div>
+    <div id="result-container" style="display: none;">
+        <h2>Resultados del Test</h2>
+        <div id="scores"></div>
+        <h3>Diagnóstico:</h3>
+        <p id="diagnosis"></p>
+        <h3>Consejo de experto:</h3>
+        <p id="expert-advice"></p>
+        <button onclick="resetTest()">Volver a hacer el test</button>
+    </div>
+
+    <script>
+        const questions = [
+            { text: "Me siento nervioso/a o ansioso/a sin razón aparente.", category: "ansiedad" },
+            { text: "Me cuesta trabajo conciliar el sueño o mantenerme dormido/a.", category: "ansiedad" },
+            { text: "Me siento triste o desanimado/a la mayor parte del tiempo.", category: "depresion" },
+            { text: "He perdido interés en actividades que antes disfrutaba.", category: "depresion" },
+            { text: "Me frustro fácilmente cuando las cosas no salen como espero.", category: "frustracion" },
+            { text: "Siento que no puedo alcanzar mis metas personales.", category: "frustracion" },
+            { text: "Me enojo con facilidad por cosas pequeñas.", category: "enojo" },
+            { text: "Tengo dificultades para controlar mi temperamento.", category: "enojo" },
+            { text: "Me siento solo/a aunque esté rodeado/a de gente.", category: "tristeza" },
+            { text: "Lloro con frecuencia o siento ganas de llorar.", category: "tristeza" },
+            { text: "Me preocupo excesivamente por el futuro.", category: "ansiedad" },
+            { text: "He notado cambios en mi apetito o peso.", category: "depresion" },
+            { text: "Me siento incompetente o inferior a los demás.", category: "frustracion" },
+            { text: "Tiendo a discutir o pelear con otros.", category: "enojo" },
+            { text: "Siento que la vida no tiene sentido.", category: "tristeza" },
+            { text: "Experimento síntomas físicos como palpitaciones o sudoración sin razón aparente.", category: "ansiedad" },
+            { text: "Me cuesta concentrarme en tareas o actividades.", category: "depresion" },
+            { text: "Me rindo fácilmente cuando enfrento obstáculos.", category: "frustracion" },
+            { text: "Tengo pensamientos de venganza o de hacer daño a otros.", category: "enojo" },
+            { text: "Me siento vacío/a o sin propósito.", category: "tristeza" }
+        ];
+
+        const expertos = [
+            { 
+                nombre: "Dra. María Rodríguez", 
+                area: "Psicología Clínica", 
+                consejo: "La práctica diaria de la atención plena y la meditación puede ser transformadora para tu bienestar emocional. Comienza dedicando 5-10 minutos cada mañana a sentarte en silencio, enfocándote en tu respiración. Observa tus pensamientos sin juzgarlos, dejándolos ir como nubes en el cielo. Gradualmente, aumenta la duración de tus sesiones. Esta práctica te ayudará a reducir el estrés, mejorar tu concentración y aumentar tu consciencia emocional. Además, considera incorporar pausas de atención plena durante tu día, especialmente en momentos de estrés. Simplemente toma tres respiraciones profundas, centrándote en el momento presente. Con el tiempo, notarás una mayor calma y claridad mental."
+            },
+            { 
+                nombre: "Dr. Carlos Méndez", 
+                area: "Terapia Cognitivo-Conductual", 
+                consejo: "Identificar y desafiar tus pensamientos negativos es una habilidad poderosa para mejorar tu bienestar emocional. Comienza llevando un diario de pensamientos. Cada vez que te sientas ansioso, triste o frustrado, anota el evento desencadenante, tus pensamientos automáticos y cómo te hicieron sentir. Luego, cuestiona estos pensamientos: ¿Son realistas? ¿Hay evidencia que los respalde o refute? ¿Cómo podría ver esta situación de manera diferente? Practica reemplazar estos pensamientos negativos con interpretaciones más equilibradas y positivas. Por ejemplo, en lugar de pensar 'Nunca tendré éxito', podrías decir 'Aunque enfrento desafíos, estoy aprendiendo y creciendo constantemente'. Con práctica, este proceso se volverá más natural y notarás una mejora significativa en tu estado de ánimo y autoestima."
+            },
+            { 
+                nombre: "Lic. Ana Gómez", 
+                area: "Psicología Positiva", 
+                consejo: "Enfocarse en tus fortalezas y cultivar la gratitud puede tener un impacto profundo en tu bienestar emocional. Comienza identificando tus principales fortalezas de carácter (puedes hacer un test en línea para esto) y piensa en cómo puedes utilizarlas más en tu vida diaria. Por ejemplo, si la creatividad es una de tus fortalezas, busca formas de incorporarla en tu trabajo o pasatiempos. Además, inicia un diario de gratitud. Cada noche, escribe tres cosas por las que estés agradecido/a ese día, por pequeñas que sean. Esto te ayudará a cambiar tu enfoque hacia los aspectos positivos de tu vida. También, practica expresar tu aprecio a los demás regularmente. Estas prácticas pueden mejorar significativamente tu estado de ánimo, aumentar tu resiliencia y fortalecer tus relaciones interpersonales."
+            },
+            { 
+                nombre: "Dr. Juan Pérez", 
+                area: "Neuropsicología", 
+                consejo: "El ejercicio regular es una herramienta poderosa no solo para tu salud física, sino también para tu bienestar mental y emocional. El ejercicio aeróbico, como correr, nadar o andar en bicicleta, aumenta la producción de endorfinas, los 'químicos del bienestar' de tu cerebro. Además, promueve la neurogénesis, el crecimiento de nuevas neuronas, especialmente en el hipocampo, una región crucial para la memoria y el aprendizaje. Intenta incorporar al menos 30 minutos de actividad física moderada a tu rutina diaria. Si te resulta difícil encontrar tiempo, puedes dividirlo en sesiones más cortas de 10 minutos. Incluso una caminata rápida puede tener beneficios significativos. También considera actividades que combinen ejercicio físico y mental, como yoga o tai chi, que pueden mejorar tanto tu estado físico como tu capacidad de concentración y relajación."
+            },
+            { 
+                nombre: "Dra. Laura Sánchez", 
+                area: "Psicoterapia", 
+                consejo: "Mantener un diario emocional es una herramienta terapéutica poderosa para aumentar tu autoconciencia y mejorar tu inteligencia emocional. Dedica unos minutos cada día a registrar tus emociones, pensamientos y comportamientos. Sé específico: anota qué emoción sentiste, qué la desencadenó y cómo reaccionaste. Con el tiempo, empezarás a notar patrones en tus respuestas emocionales. Esto te permitirá identificar tus desencadenantes emocionales y desarrollar estrategias más efectivas para manejarlos. Además, practica la 'etiquetación emocional': nombra tus emociones con precisión. En lugar de decir simplemente que te sientes 'mal', trata de identificar si estás frustrado, decepcionado, ansioso, etc. Esta práctica puede ayudarte a procesar tus emociones más efectivamente y a comunicarte mejor con los demás. Recuerda, el objetivo no es juzgar tus emociones, sino entenderlas mejor para manejarlas de manera más saludable."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = {};
+
+        function showQuestion() {
+            const questionText = document.getElementById('question-text');
+            const options = document.getElementById('options');
+            
+            questionText.textContent = `${currentQuestion + 1}. ${questions[currentQuestion].text}`;
+            options.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.onclick = () => handleAnswer(i);
+                options.appendChild(button);
+            }
+        }
+
+        function handleAnswer(value) {
+            answers[currentQuestion] = value;
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const questionContainer = document.getElementById('question-container');
+            const resultContainer = document.getElementById('result-container');
+            const scoresDiv = document.getElementById('scores');
+            const diagnosisP = document.getElementById('diagnosis');
+            const expertAdviceP = document.getElementById('expert-advice');
+            
+            questionContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            
+            const scores = calculateScores();
+            scoresDiv.innerHTML = '';
+            Object.entries(scores).forEach(([category, score]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.innerHTML = `
+                    <p>${category.charAt(0).toUpperCase() + category.slice(1)}: ${score}</p>
+                    <div class="progress-bar">
+                        <span class="progress-bar-fill" style="width: ${score * 5}%;"></span>
+                    </div>
+                `;
+                scoresDiv.appendChild(categoryDiv);
+            });
+            
+            const maxScore = Math.max(...Object.values(scores));
+            const diagnoses = Object.keys(scores).filter(key => scores[key] === maxScore);
+            diagnosisP.textContent = `Basado en tus respuestas, podrías estar experimentando niveles elevados de: ${diagnoses.join(", ")}.`;
+            
+            const expert = expertos[Math.floor(Math.random() * expertos.length)];
+            expertAdviceP.innerHTML = `<strong>${expert.nombre}</strong> (Experto en ${expert.area}): "${expert.consejo}"`;
+        }
+
+        function calculateScores() {
+            const scores = { ansiedad: 0, depresion: 0, frustracion: 0, enojo: 0, tristeza: 0 };
+            Object.entries(answers).forEach(([index, value]) => {
+                const category = questions[index].category;
+                scores[category] += value;
+            });
+            return scores;
+        }
+
+        function resetTest() {
+            currentQuestion = 0;
+            answers = {};
+            document.getElementById('question-container').style.display = 'block';
+            document.getElementById('result-container').style.display = 'none';
+            showQuestion();
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>

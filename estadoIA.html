@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Estado de Ánimo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="shortcut icon" href="./Logodannygreen (1).png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #7FD958;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .submit-btn, .final-btn,.btn-test {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover, .final-btn:hover, .btn-test:hover {
+            background-color: #45a049;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .state-log {
+            margin-top: 20px;
+        }
+
+        .state-log h3 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .state-log ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .state-log ul li {
+            background-color: #e7e7e7;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .advice {
+            margin-top: 20px;
+            background-color: #e0f7fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            min-height: 100px;
+        }
+        
+        .advice h3 {
+            margin-bottom: 10px;
+        }
+
+        .chart-container {
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+
+        /* Responsividad */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 100%;
+                padding: 15px;
+            }
+
+            h2, h3 {
+                font-size: 18px;
+            }
+
+            .form-input {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .submit-btn, .final-btn {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .advice {
+                padding: 10px;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .container {
+                max-width: 90%;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            body {
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 500px;
+            }
+
+            h2, h3 {
+                font-size: 22px;
+            }
+
+            .form-input {
+                font-size: 16px;
+            }
+
+            .submit-btn, .final-btn {
+                font-size: 16px;
+            }
+
+            .advice {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="interaction-container">
+        <h2 id="greeting"></h2>
+        <p>Hora de inicio de sesión: <span id="login-time"></span></p>
+
+        <h3>¿Cómo te sientes?</h3>
+        <form id="moodForm">
+            <label for="mood">Selecciona tu emoción:</label>
+            <select class="form-input" id="mood" required>
+                <option value="Enojado">Enojado</option>
+                <option value="Deprimido">Deprimido</option>
+                <option value="Ansioso">Ansioso</option>
+                <option value="Triste">Triste</option>
+                <option value="Furioso">Furioso</option>
+            </select>
+
+            <label for="intensity">Grado de intensidad (1 - leve, 5 - intenso):</label>
+            <select class="form-input" id="intensity" required>
+                <option value="1">1 - Leve</option>
+                <option value="2">2 -  </option>
+                <option value="3">3 - Intermedio</option>
+                <option value="4">4 - </option>
+                <option value="5">5 - Intenso</option>
+            </select>
+
+            <button type="submit" class="submit-btn">Registrar Estado de Ánimo</button>
+        </form>
+
+        <div class="state-log" id="state-log">
+            <h3>Registro del día:</h3>
+            <ul id="mood-log"></ul>
+        </div>
+
+        <div class="advice" id="advice-box">
+            <h3>Consejo</h3>
+            <p id="advice-text">El consejo aparecerá aquí...Esperando tu solicitud, para darte apoyo...</p>
+        </div>
+
+        <button class="final-btn" id="finalize-btn">Finalizar Diagnóstico</button>
+
+        <div class="chart-container" id="chart-container" style="display:none;">
+            <canvas id="moodChart"></canvas>
+        </div>
+        <div class="chart-test" id="chart-test" style="display:none;"></div>
+            <button class="btn-test" id="btn-test" style="display:none;">Conócete más con este test</button>
+        </div>
+    </div>
+
+    <script>
+        let userName = '';
+        let loginTime = '';
+        let moodEntries = [];
+
+        // Función para obtener la hora en formato de 12 horas con AM/PM
+        function get12HourFormat(date) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Si la hora es 0, mostrar 12
+            minutes = minutes < 10 ? '0' + minutes : minutes; // Agregar 0 a los minutos si es menor de 10
+            return hours + ':' + minutes + ' ' + ampm;
+        }
+
+        // Simulamos el inicio de sesión previo
+        document.addEventListener('DOMContentLoaded', function() {
+            userName = 'Seré tu asistente virtual'; // Simulamos que ya hay un nombre guardado
+            loginTime = get12HourFormat(new Date());
+
+            document.getElementById('greeting').textContent = `¡Hola, ${userName}!`;
+            document.getElementById('login-time').textContent = loginTime;
+        });
+
+        // Función para registrar el estado de ánimo
+        document.getElementById('moodForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Obtener la emoción seleccionada, la intensidad y la hora
+            const mood = document.getElementById('mood').value;
+            const intensity = document.getElementById('intensity').value;
+            const time = get12HourFormat(new Date());
+
+            // Agregar la entrada al registro de estados de ánimo
+            moodEntries.push({ mood, intensity, time });
+            updateMoodLog();
+
+            // Generar el consejo con base en la emoción y la intensidad
+            const advice = generateAdvice(mood, intensity);
+            
+            // Limpiar el contenido actual del texto del consejo
+            document.getElementById('advice-text').textContent = '';
+            
+            // Llamar a la función de animación para escribir el consejo
+            typeAdvice(advice);
+        });
+
+        // Función para actualizar el registro visual de estados de ánimo
+        function updateMoodLog() {
+            const moodLog = document.getElementById('mood-log');
+            moodLog.innerHTML = ''; // Limpiar la lista antes de actualizarla
+
+            moodEntries.forEach(entry => {
+                const moodItem = document.createElement('li');
+                moodItem.textContent = `Emoción: ${entry.mood}, Intensidad: ${entry.intensity}, Hora: ${entry.time}`;
+                moodLog.appendChild(moodItem);
+            });
+        }
+
+        // Función para generar consejos basados en la emoción e intensidad
+        function generateAdvice(mood, intensity) {
+            let advice = '';
+
+            switch(mood) {
+                case 'Enojado':
+                    if (intensity < 3) {
+                        advice = 'Respira profundamente y haz una pausa breve. Tomar un momento para respirar profundamente y dar un breve paseo puede ayudarte a calmarte y evitar que el enojo se intensifique. La técnica de respiración profunda activa el sistema nervioso parasimpático, lo que puede reducir la respuesta de estrés.Fuente: Dr. Jon Kabat-Zinn, experto en mindfulness y creador del programa de Reducción de Estrés Basado en Mindfulness (MBSR). Kabat-Zinn ha escrito extensamente sobre cómo la atención plena puede ayudar a manejar las emociones, incluido el enojo.';
+                    }
+                    if (intensity == 3) {
+                        advice = 'Exprésate de manera asertiva, pero no agresiva. Comunica tus sentimientos y necesidades de manera clara y respetuosa. Utilizar un lenguaje asertivo puede ayudar a resolver conflictos sin escalar la situación. La asertividad implica expresar tus opiniones de manera honesta mientras respetas los sentimientos de los demás.Fuente: Dr. Albert Ellis, psicólogo y fundador de la Terapia Racional Emotiva Conductual (REBT). Ellis ha escrito sobre cómo la comunicación efectiva y la gestión emocional pueden contribuir a resolver conflictos y reducir el enojo.';
+                    }
+                    if (intensity > 3) {
+                        advice = 'Busca ayuda profesional si el enojo se vuelve abrumador. Cuando el enojo es intenso y persistente, puede ser útil buscar la ayuda de un terapeuta o consejero especializado en manejo de la ira. La terapia puede proporcionar herramientas y estrategias para manejar las emociones de manera saludable y evitar que afecten negativamente tu vida.Fuente: Dr. James Gilligan, psiquiatra y experto en manejo de la ira. Gilligan ha trabajado con individuos que luchan con la ira intensa y ha escrito sobre la importancia de la intervención profesional para tratar el enojo crónico y severo.';
+                    }
+                    break;
+                case 'Deprimido':
+                    if (intensity < 3) {
+                        advice = 'Haz ejercicio físico ligero o da un paseo. La actividad física, incluso en pequeñas cantidades, puede liberar endorfinas, mejorando el estado de ánimo y reduciendo síntomas leves de depresión. Caminar o hacer estiramientos suaves puede ser suficiente para romper el ciclo de pensamientos negativos.Fuente: Dr. John J. Ratey, psiquiatra y autor de "Spark: The Revolutionary New Science of Exercise and the Brain." Ratey ha investigado cómo el ejercicio puede mejorar la salud mental y aliviar síntomas de depresión leve.';
+                    }
+                    if (intensity == 3) {
+                        advice = 'Habla con alguien de confianza. Compartir tus pensamientos y emociones con un amigo cercano o familiar puede aliviar la carga emocional. El apoyo social es crucial para manejar la depresión de nivel intermedio. No necesitas resolver tus problemas en una sola conversación, pero hablar de ellos puede traer alivio.Fuente: Dr. David Burns, psiquiatra y autor de "Feeling Good: The New Mood Therapy." Burns es conocido por su trabajo en la Terapia Cognitivo-Conductual (TCC) y su enfoque en cómo las interacciones sociales pueden mejorar el estado de ánimo en personas con depresión moderada.';
+                    } 
+                    if (intensity > 3) {
+                        advice = 'Si la depresión es profunda y persistente, es crucial buscar el apoyo de un terapeuta o un psiquiatra. La terapia cognitivo-conductual, la terapia interpersonal, o el tratamiento con medicación pueden ser necesarios para manejar la depresión severa. Ignorar estos síntomas puede empeorar la condición.Fuente: Dr. Aaron T. Beck, psiquiatra y uno de los fundadores de la Terapia Cognitivo-Conductual (TCC). Beck ha trabajado con pacientes con depresión severa y ha desarrollado herramientas terapéuticas para manejar la depresión profunda y las tendencias suicidas.';
+                    }
+                    break;
+                case 'Ansioso':
+                    if (intensity < 3) {
+                        advice = ' Cuando la ansiedad es leve, una técnica sencilla pero efectiva es enfocarse en la respiración. La respiración profunda activa el sistema nervioso parasimpático, lo que puede reducir la sensación de ansiedad y promover una sensación de calma.Fuente: Dr. Andrew Weil, médico y pionero en medicina integrativa, ha promovido la técnica de respiración 4-7-8, que ayuda a calmar el sistema nervioso y reducir la ansiedad leve.';
+                    }
+                    if (intensity == 3) {
+                        advice = 'Cuando la ansiedad es moderada, practicar la atención plena puede ayudar a desviar la mente de los pensamientos ansiosos y centrarte en el presente. Realiza un ejercicio de escaneo corporal o enfócate en las sensaciones inmediatas a tu alrededor.Fuente: Jon Kabat-Zinn, profesor emérito de la Universidad de Massachusetts y creador del programa de reducción de estrés basado en la atención plena (Mindfulness-Based Stress Reduction), ha mostrado cómo la práctica del mindfulness puede reducir síntomas de ansiedad en personas con ansiedad moderada.';
+                    } 
+                    if (intensity > 3) {
+                        advice = 'Cuando la ansiedad se vuelve intensa y debilitante, una estrategia recomendada es la exposición gradual a lo que provoca ansiedad, permitiendo que la mente se habitúe a las situaciones desencadenantes. Sin embargo, si es abrumadora, buscar apoyo terapéutico es clave.Fuente: Dr. David Barlow, psicólogo clínico y experto en ansiedad, ha desarrollado métodos de terapia de exposición para tratar la ansiedad intensa y los trastornos de pánico. Ha mostrado cómo la exposición controlada puede ayudar a desensibilizar a las personas frente a sus miedos.';
+                    }
+                    break;
+                case 'Triste':
+                    if (intensity < 3) {
+                        advice = 'Cuando la tristeza es leve, realizar actividades que solías disfrutar, como escuchar música, dibujar, leer, o caminar, puede mejorar tu estado de ánimo. Estos pequeños actos activan las zonas del cerebro relacionadas con el placer y la gratificación, lo que ayuda a reducir la tristeza.Fuente: Dr. Sonja Lyubomirsky, psicóloga y autora de "La ciencia de la felicidad", señala que participar en actividades placenteras puede tener un impacto positivo en el estado emocional y contrarrestar la tristeza leve.';
+                    }
+                    if (intensity == 3) {
+                        advice = 'La tristeza moderada puede aliviarse cuando compartimos nuestros sentimientos con amigos, familiares o un terapeuta. Expresar lo que sientes ayuda a procesar las emociones y a recibir apoyo emocional, lo cual es esencial para superar estos momentos.Fuente: Dr. Guy Winch, psicólogo clínico y autor de "Emotional First Aid", destaca que hablar con otros sobre nuestros sentimientos puede ayudar a reducir la carga emocional y ofrecer una nueva perspectiva para superar la tristeza moderada.';
+                    } 
+                    if (intensity > 3) {
+                        advice = 'Si la tristeza se vuelve intensa y persiste, es importante ser amable contigo mismo y no juzgarte por lo que sientes. Además, considerar la ayuda de un terapeuta o consejero puede ser esencial para obtener herramientas que te permitan manejar y procesar estos sentimientos profundos.Fuente: Kristin Neff, experta en auto-compasión, ha demostrado que practicar la auto-compasión, en lugar de la autocrítica, es clave para manejar estados emocionales intensos como la tristeza profunda. También destaca la importancia de buscar ayuda profesional cuando la tristeza se vuelve abrumadora.';
+                    }
+                    break;
+                case 'Furioso':
+                if (intensity < 3) {
+                        advice = 'Cuando experimentas una furia leve, una técnica efectiva es la respiración profunda. Detente, cierra los ojos y toma respiraciones largas y pausadas. Esto ayuda a activar el sistema nervioso parasimpático, que reduce la tensión emocional y permite que recuperes el control rápidamente.Fuente: Dr. Andrew Weil, experto en medicina integrativa, señala que la respiración profunda y controlada es una de las mejores maneras de calmar las emociones fuertes, ya que disminuye la respuesta fisiológica ante el estrés.';
+                    }
+                    if (intensity == 3) {
+                        advice = 'Si la furia alcanza un nivel moderado, es útil tomar una pausa y alejarse de la situación que la desencadenó. Tomarte un tiempo para calmarte antes de volver a enfrentarlo puede evitar que la situación escale, y te da espacio para reflexionar de manera más racional.Fuente: Dr. Charles Spielberger, psicólogo especializado en el estudio de la ira, recomienda dar un paso atrás cuando uno se siente sobrecargado emocionalmente. Retirarse de la situación permite que los niveles de adrenalina disminuyan, lo que facilita un mejor control de las emociones.';
+                    } 
+                    if (intensity > 3) {
+                        advice = 'Cuando la furia es intensa, es crucial encontrar formas saludables de liberar esa energía. El ejercicio físico, como correr, hacer boxeo o incluso caminar rápido, puede ser un canal efectivo para liberar la tensión sin dañar a otros o a ti mismo.Fuente: Dr. John Ratey, psiquiatra y autor de "Spark", destaca que el ejercicio físico es una excelente forma de manejar emociones intensas, ya que ayuda a liberar neurotransmisores que calman el cerebro y el cuerpo, reduciendo los niveles de ira acumulada.';
+                    }
+                    break;
+            }
+
+            return advice;
+        }
+
+        // Función para escribir el consejo con efecto de escritura
+        function typeAdvice(advice) {
+            let index = 0;
+            const speed = 30; // Velocidad de escritura
+
+            function type() {
+                if (index < advice.length) {
+                    document.getElementById('advice-text').textContent += advice.charAt(index);
+                    index++;
+                    setTimeout(type, speed);
+                }
+            }
+
+            type(); // Iniciar la animación de escritura
+        }
+
+        // Función para generar gráfico cuando se finaliza el diagnóstico
+        document.getElementById('finalize-btn').addEventListener('click', function() {
+            if (moodEntries.length === 0) {
+                alert('No hay datos para generar el gráfico. Registra al menos una entrada.');
+                return;
+            }
+
+            // Mostrar el contenedor del gráfico
+            document.getElementById('chart-container').style.display = 'block';
+
+            // Generar datos para el gráfico
+            const labels = moodEntries.map(entry => entry.time);
+            const data = moodEntries.map(entry => entry.intensity);
+            const backgroundColors = moodEntries.map(entry => {
+                switch (entry.mood) {
+                    case 'Enojado': return 'rgba(255, 99, 132, 0.6)';
+                    case 'Deprimido': return 'rgba(54, 162, 235, 0.6)';
+                    case 'Ansioso': return 'rgba(255, 206, 86, 0.6)';
+                    case 'Triste': return 'rgba(75, 192, 192, 0.6)';
+                    case 'Furioso': return 'rgba(153, 102, 255, 0.6)';
+                    default: return 'rgba(255, 159, 64, 0.6)';
+                }
+            });
+
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            const moodChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Intensidad del Estado de Ánimo',
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5
+                        }
+                    }
+                }
+            });
+            document.getElementById('chart-container').style.display = 'block';
+            document.getElementById('btn-test').style.display = 'block';
+            document.getElementById('btn-test').addEventListener('click', function() {
+            window.location.href = "test.html";
+        });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <link rel="shortcut icon" href="./Logodannygreen (1).png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #45a049;
+            margin: 0;
+            padding: 0;
+        }
+
+        .iniciodesesion {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            background-color: #7FD958;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .Logodannygreen img {
+            max-width: 150px;
+            width: 200%;
+        }
+
+        .login-container {
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .submit-btn {
+            width: 90%;
+            padding: 10px;
+            background-color:rgb(255, 255, 255);
+            color: black;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .submit-btn:hover {
+            background-color: rgb(19, 181, 19);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 600px) {
+            .iniciodesesion {
+                flex-direction: column;
+                width: 90%;
+                padding: 10px;
+            }
+
+            .Logodannygreen {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+
+            .Logodannygreen img {
+                max-width: 200px;
+                width: 100%;
+            }
+
+            .login-container {
+                width: 90%;
+                padding: 10px;
+            }
+
+            .form-input, .submit-btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="iniciodesesion">
+        <div class="Logodannygreen">
+            <img src="./Logodannygreen (1).png" alt="Logo">
+        </div>
+        <div class="login-container" id="login-container">
+            <h2>Escribe el Usuario</h2>
+            <form id="loginForm">
+                <input type="text" class="form-input" id="name" placeholder="Nombre" required>
+                <button type="submit" class="submit-btn">Iniciar Sesión</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="hidden" id="interaction-container">
+        <h2 id="greeting"></h2>
+        <p>Hora de inicio de sesión: <span id="login-time"></span></p>
+        <button id="interact-btn" class="submit-btn">Interactuar con mi asistente emocional</button>
+        <p id="interaction-result" class="hidden">Has interactuado con la IA a las <span id="interaction-time"></span></p>
+    </div>
+
+    <script>
+
+
+        // Función para obtener la hora en formato de 12 horas con AM/PM
+        function get12HourFormat(date) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Si la hora es 0, mostrar 12
+            minutes = minutes < 10 ? '0' + minutes : minutes; // Agregar 0 a los minutos si es menor de 10
+            return hours + ':' + minutes + ' ' + ampm;
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Guardar el nombre y la hora de inicio de sesión
+            user = document.getElementById('name').value;
+            loginTime = get12HourFormat(new Date());
+            
+            // Mostrar saludo y hora de inicio de sesión
+            document.getElementById('greeting').textContent = `¡Hola, ${user}!`;
+            document.getElementById('login-time').textContent = loginTime;
+
+            // Ocultar el formulario de inicio de sesión y mostrar la sección de interacción
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('interaction-container').classList.remove('hidden');
+        });
+
+        document.getElementById('interact-btn').addEventListener('click', function() {
+            window.location.href = "estadoIA.html";
+        });
+
+    </script>
+</body>
+</html>
+
